@@ -1,4 +1,7 @@
-
+# Your name: Sarayu Dandamudi
+# Your student id: 27141407
+# Your email: sarayud@umich.edu
+# List who you have worked with on this homework: Claire Zuo, Jia-Tong Choo
 import unittest
 
 # The Customer class
@@ -28,7 +31,8 @@ class Customer:
     # Submit_order takes a cashier, a stall and an amount as parameters, 
     # it deducts the amount from the customer’s wallet and calls the receive_payment method on the cashier object
     def submit_order(self, cashier, stall, amount): 
-        Cashier.receive_payment(stall, amount)
+        self.wallet -= amount
+        cashier.receive_payment(stall, amount)
 
     # The __str__ method prints the customer's information.    
     def __str__(self):
@@ -79,7 +83,7 @@ class Stall:
     
     def process_order(self, name, quantity):
         if self.has_item(name, quantity):
-            self.inventory[name] = self.inventory - quantity
+            self.inventory[name] = self.inventory[name] - quantity
     
     def has_item(self, name, quantity): 
         if name in self.inventory:
@@ -101,7 +105,8 @@ class Stall:
         return total
 
     def _str_(self):
-        return "Hello, we are" + self.name + " . This is the current menu" + str(self.inventory) + " . We charge $" + self.cost + " per item. We have $" + self.earnings + "in total."
+        menu_key = self.inventory.keys()
+        return "Hello, we are" + self.name + " . This is the current menu" + str(menu_key) + " . We charge $" + self.cost + " per item. We have $" + self.earnings + "in total."
 
 
 class TestAllMethods(unittest.TestCase):
@@ -208,25 +213,45 @@ class TestAllMethods(unittest.TestCase):
 
     # Test if a customer can add money to their wallet
     def test_reload_money(self):
-        pass
+        self.f2.wallet = 50
+        self.f2.reload_money(50)
+        self.assertEqual(self.f2.wallet, 100) 
     
 ### Write main function
 def main():
     #Create different objects 
+    inventory1 = {"Burger": 10, "Taco": 30, "Pizza": 20}
+    inventory2 = {"Pasta": 30, "Noodles": 20, "Meat": 40}
+    customer1 = Customer("Martha", 30)
+    customer2 = Customer('Bob', 10)
+    customer3 = Customer("Harry", 50)
+    stall1 = Stall("Taco Avenue", inventory1, cost = 8)
+    stall2 = Stall("Noodle Place", inventory2, cost = 5)
+    cashier1 = Cashier("South", [stall1])
+    cashier2 = Cashier("Southwest", [stall2])
 
     #Try all cases in the validate_order function
     #Below you need to have *each customer instance* try the four cases
     #case 1: the cashier does not have the stall 
-    
+    customer1.validate_order(cashier1, stall2, "Noodles", 10)
+    customer2.validate_order(cashier2, stall1, "Burger", 15)
+    customer3.validate_order(cashier1, stall2, "Pasta", 20)
+
     #case 2: the casher has the stall, but not enough ordered food or the ordered food item
-    
+    customer1.validate_order(cashier1, stall1, 'Burger', 20)
+    customer2.validate_order(cashier2, stall2, 'Noodles', 25)
+    customer3.validate_order(cashier2, stall2, 'Meat', 50)
     #case 3: the customer does not have enough money to pay for the order: 
-    
+    customer1.validate_order(cashier1, stall1, "Pizza", 19)
+    customer2.validate_order(cashier2, stall2, "Noodles", 17)
+    customer3.validate_order(cashier1, stall1, "Taco", 28)
     #case 4: the customer successfully places an order
-    pass
+    customer1.validate_order(cashier1, stall1, "Taco", 2)
+    customer2.validate_order(cashier2, stall2, "Meat", 5)
+    customer3.validate_order(cashier1, stall1, 'Burger', 1)
     
 
 if __name__ == "__main__":
-	#main()
+	main()
 	print("\n")
 	unittest.main(verbosity = 2)
